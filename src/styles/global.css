@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+html { scroll-behavior: smooth; }
+ 
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f5f0e8;
+  color: #1a3a1a;
+  overflow-x: hidden;
+}
+ 
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #e8ede2; }
+::-webkit-scrollbar-thumb { background: #4a7c59; border-radius: 3px; }
+ 
+/* ── Keyframes ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-18px); }
+}
+ 
+@keyframes sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50%       { transform: rotate(4deg); }
+}
+ 
+@keyframes fadeUp {
+  0%   { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+ 
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,124,89,.4); }
+  70%       { box-shadow: 0 0 0 16px rgba(74,124,89,0); }
+}
+ 
+@keyframes leafFall {
+  0%   { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+ 
+@keyframes ripple {
+  0%   { transform: scale(.8); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+ 
+@keyframes gradMove {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+ 
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+ 
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .gallery-grid-responsive {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+  }
+  .gallery-grid-responsive > :first-child {
+    grid-row: auto !important;
+    height: 280px;
+  }
+  .gallery-grid-responsive > * {
+    height: 200px;
+  }
+  footer {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
