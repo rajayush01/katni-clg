@@ -1,426 +1,218 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import dpslogo from "../../assets/tilaklogo1.png";
 
-interface LoaderProps {
-  onComplete?: () => void;
+
+type SizeType = 'sm' | 'md' | 'lg';
+
+interface DPSLoadingProps {
+	size?: SizeType;
+	duration?: number;
+	onLoadingComplete?: () => void;
+	showProgress?: boolean;
+	mode?: 'timed' | 'suspense';
 }
 
-export default function Loader({ onComplete }: LoaderProps) {
-  const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<"loading" | "done">("loading");
+const DPSLoading: React.FC<DPSLoadingProps> = ({
+	size = 'md',
+	duration = 3000,
+	onLoadingComplete,
+	showProgress = true,
+	mode = 'timed',
+}) => {
+	const [progress, setProgress] = useState(0);
+	const [isComplete, setIsComplete] = useState(false);
 
-  useEffect(() => {
-    // Simulate loading progress
-    const intervals: ReturnType<typeof setTimeout>[] = [];
+	const sizeClasses: Record<
+		SizeType,
+		{
+			container: string;
+			logo: string;
+			text: string;
+			ring: string;
+		}
+	> = {
+		sm: {
+			container: 'w-20 h-20',
+			logo: 'w-12 h-12',
+			text: 'text-sm',
+			ring: 'w-24 h-24',
+		},
+		md: {
+			container: 'w-28 h-28',
+			logo: 'w-16 h-16',
+			text: 'text-base',
+			ring: 'w-32 h-32',
+		},
+		lg: {
+			container: 'w-36 h-36',
+			logo: 'w-20 h-20',
+			text: 'text-lg',
+			ring: 'w-40 h-40',
+		},
+	};
 
-    const steps = [
-      { to: 30, delay: 0, duration: 600 },
-      { to: 58, delay: 700, duration: 500 },
-      { to: 80, delay: 1300, duration: 400 },
-      { to: 100, delay: 1800, duration: 350 },
-    ];
+	const currentSize = sizeClasses[size];
 
-    steps.forEach(({ to, delay, duration }) => {
-      const t = setTimeout(() => {
-        const start = Date.now();
-        const from = progress;
-        const tick = setInterval(() => {
-          const elapsed = Date.now() - start;
-          const frac = Math.min(elapsed / duration, 1);
-          // Ease out cubic
-          const eased = 1 - Math.pow(1 - frac, 3);
-          setProgress(Math.round(from + (to - from) * eased));
-          if (frac >= 1) clearInterval(tick);
-        }, 16);
-        intervals.push(tick as unknown as ReturnType<typeof setTimeout>);
-      }, delay);
-      intervals.push(t);
-    });
+	useEffect(() => {
+		if (mode !== 'timed') return;
 
-    const done = setTimeout(() => {
-      setPhase("done");
-      setTimeout(() => onComplete?.(), 700);
-    }, 2400);
-    intervals.push(done);
+		const interval = setInterval(() => {
+			setProgress((prevProgress) => {
+				const newProgress = prevProgress + 100 / (duration / 50);
+				if (newProgress >= 100) {
+					clearInterval(interval);
+					setIsComplete(true);
+					setTimeout(() => {
+						onLoadingComplete?.();
+					}, 500);
+					return 100;
+				}
+				return newProgress;
+			});
+		}, 50);
 
-    return () => intervals.forEach(clearTimeout);
-  }, []);
+		return () => clearInterval(interval);
+	}, [duration, onLoadingComplete, mode]);
 
-  return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+	// const getLoadingText = () => {
+	// 	if (mode === 'suspense') return 'Loading...';
 
-        .bio-loader {
-          position: fixed;
-          inset: 0;
-          z-index: 9999;
-          background: #1a3a1a;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .bio-loader.done {
-          opacity: 0;
-          transform: scale(1.04);
-          pointer-events: none;
-        }
+	// 	if (progress < 30) return 'Initializing...';
+	// 	if (progress < 60) return 'Loading Resources...';
+	// 	if (progress < 90) return 'Almost Ready...';
+	// 	if (isComplete) return 'Complete!';
+	// 	return 'Finalizing...';
+	// };
 
-        /* Noise overlay */
-        .bio-loader::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-          opacity: 0.25;
-          pointer-events: none;
-        }
+	return (
+		<div
+			className={`flex flex-col items-center justify-center space-y-6 p-8 transition-opacity duration-500 ${isComplete ? 'opacity-90' : 'opacity-100'}`}
+		>
+			<div className="relative">
+				{/* Subtle outer glow */}
+				<div
+					className={`${currentSize.ring} absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full`}
+					style={{
+						background: 'radial-gradient(circle, rgba(105, 11, 34, 0.08), transparent 70%)',
+						animation: 'pulse-gentle 3s ease-in-out infinite',
+					}}
+				/>
 
-        /* Background orbs */
-        .loader-orb {
-          position: absolute;
-          border-radius: 50%;
-          pointer-events: none;
-          animation: orbPulse 6s ease-in-out infinite;
-        }
-        .loader-orb-1 {
-          width: 500px; height: 500px;
-          background: radial-gradient(circle, #2d5a27 0%, transparent 70%);
-          top: -20%; left: -15%;
-          animation-delay: 0s;
-        }
-        .loader-orb-2 {
-          width: 380px; height: 380px;
-          background: radial-gradient(circle, #4a7c59 0%, transparent 70%);
-          bottom: -15%; right: -5%;
-          animation-delay: -3s;
-        }
-        .loader-orb-3 {
-          width: 260px; height: 260px;
-          background: radial-gradient(circle, #a0653a 0%, transparent 70%);
-          top: 30%; right: 20%;
-          opacity: 0.35;
-          animation-delay: -1.5s;
-        }
+				{/* Single elegant rotating ring */}
+				<div
+					className={`${currentSize.container} relative rounded-full`}
+					style={{
+						background: 'conic-gradient(from 0deg, transparent 0%, #e5be10 50%, transparent 100%)',
+						animation: 'rotate-smooth 3s linear infinite',
+						padding: '2px',
+					}}
+				>
+					<div className="w-full h-full bg-white rounded-full shadow-lg" />
+				</div>
 
-        /* Central ring */
-        .loader-ring-wrap {
-          position: relative;
-          width: 160px;
-          height: 160px;
-          margin-bottom: 40px;
-        }
-        .loader-ring-bg {
-          position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          border: 1.5px solid rgba(255,255,255,0.08);
-        }
-        .loader-ring-track {
-          position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          border: 1.5px solid transparent;
-          border-top-color: rgba(212,184,150,0.25);
-          animation: spin 3s linear infinite;
-        }
-        .loader-ring-mid {
-          position: absolute;
-          inset: 16px;
-          border-radius: 50%;
-          border: 1px solid rgba(200,219,192,0.12);
-          animation: spinRev 5s linear infinite;
-        }
-        .loader-ring-inner {
-          position: absolute;
-          inset: 32px;
-          border-radius: 50%;
-          border: 1.5px solid rgba(135,168,120,0.2);
-          border-bottom-color: rgba(135,168,120,0.5);
-          animation: spin 2s linear infinite;
-        }
+				{/* Logo container */}
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+					<div
+						className={`${currentSize.logo} rounded-full flex items-center justify-center shadow-xl transform transition-transform duration-500 ${isComplete ? 'scale-110' : 'scale-100'}`}
+						style={{
+							boxShadow: '0 8px 20px rgba(105, 11, 34, 0.25)',
+						}}
+					>
+						{/* Placeholder for logo - replace with actual logo */}
+						<div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-xs">
+							<img src={dpslogo} alt="" />
+						</div>
+					</div>
+				</div>
+			</div>
 
-        /* Botanical SVG in center */
-        .loader-botanical {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          animation: floatSlow 4s ease-in-out infinite;
-        }
+			{/* Text content */}
+			<div className="text-center space-y-3 max-w-md">
+				<div className="relative">
+					<h1
+						className={`${currentSize.text} font-bold text-[#e5be10] tracking-wider`}
+						style={{
+							// color: '#ffffff',
+							letterSpacing: '0.1em',
+						}}
+					>
+						Govt Tilak college
+					</h1>
+					<div
+						className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px bg-gradient-to-r from-transparent via-[#e5be10] to-transparent"
+						style={{ 
+							width: '50%',
+							animation: 'expand 2s ease-in-out infinite alternate',
+						}}
+					/>
+				</div>
 
-        /* Leaf particles */
-        .loader-leaf {
-          position: absolute;
-          font-size: 14px;
-          opacity: 0;
-          animation: leafFloat linear infinite;
-          pointer-events: none;
-        }
+				{/* <p
+					className="text-sm font-medium transition-opacity duration-300"
+					style={{ color: '#ffffff', opacity: 0.8 }}
+				>
+					{getLoadingText()}
+				</p> */}
 
-        /* Wordmark */
-        .loader-wordmark {
-          position: relative;
-          z-index: 1;
-          text-align: center;
-          margin-bottom: 36px;
-        }
-        .loader-eyebrow {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          letter-spacing: 2.5px;
-          text-transform: uppercase;
-          color: #c8dbc0;
-          margin-bottom: 8px;
-          opacity: 0;
-          animation: fadeUp 0.6s 0.2s ease forwards;
-        }
-        .loader-eyebrow::before,
-        .loader-eyebrow::after {
-          content: '';
-          display: block;
-          width: 20px;
-          height: 1px;
-          background: #c8dbc0;
-          opacity: 0.5;
-        }
-        .loader-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 36px;
-          color: #f5f0e8;
-          line-height: 1.1;
-          letter-spacing: -0.3px;
-          opacity: 0;
-          animation: fadeUp 0.6s 0.35s ease forwards;
-        }
-        .loader-title em {
-          font-style: italic;
-          color: #d4b896;
-        }
+				{/* Simplified loading dots */}
+				<div className="flex space-x-2 justify-center pt-1">
+					{[0, 1, 2].map((index) => (
+						<div
+							key={index}
+							className="w-2 h-2 rounded-full bg-[#e5be10]"
+							style={{
+								// background: '#ffffff',
+								animation: `bounce-dot 1.4s ease-in-out ${index * 0.16}s infinite`,
+								opacity: 0.6,
+							}}
+						/>
+					))}
+				</div>
 
-        /* Progress bar */
-        .loader-progress-wrap {
-          position: relative;
-          z-index: 1;
-          width: 240px;
-          text-align: center;
-        }
-        .loader-progress-numbers {
-          display: flex;
-          justify-content: space-between;
-          align-items: baseline;
-          margin-bottom: 10px;
-          opacity: 0;
-          animation: fadeUp 0.6s 0.5s ease forwards;
-        }
-        .loader-percent {
-          font-family: 'Playfair Display', serif;
-          font-size: 13px;
-          color: #d4b896;
-          letter-spacing: 1px;
-        }
-        .loader-label {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          color: #87a878;
-        }
-        .loader-bar-track {
-          width: 100%;
-          height: 2px;
-          background: rgba(255,255,255,0.08);
-          border-radius: 2px;
-          overflow: hidden;
-          opacity: 0;
-          animation: fadeUp 0.6s 0.5s ease forwards;
-        }
-        .loader-bar-fill {
-          height: 100%;
-          background: linear-gradient(90deg, #4a7c59, #d4b896);
-          border-radius: 2px;
-          transition: width 0.3s ease;
-          position: relative;
-        }
-        .loader-bar-fill::after {
-          content: '';
-          position: absolute;
-          right: 0;
-          top: -2px;
-          width: 4px;
-          height: 6px;
-          background: #d4b896;
-          border-radius: 2px;
-          box-shadow: 0 0 8px rgba(212,184,150,0.8);
-        }
+				{/* Progress bar */}
+				{showProgress && mode === 'timed' && (
+					<div className="pt-2 space-y-2">
+						<div className="w-48 h-1.5 bg-gray-300 rounded-full overflow-hidden mx-auto">
+							<div
+								className="h-full rounded-full transition-all duration-300 ease-out"
+								style={{
+									background: 'linear-gradient(90deg, #e5be10, #e5be10)',
+									width: `${progress}%`,
+								}}
+							/>
+						</div>
+						<p className="text-xs font-medium" style={{ color: '#ffffff', opacity: 0.6 }}>
+							{Math.round(progress)}%
+						</p>
+					</div>
+				)}
+			</div>
 
-        /* Bottom hint */
-        .loader-hint {
-          position: absolute;
-          bottom: 32px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          color: rgba(200,219,192,0.35);
-          opacity: 0;
-          animation: fadeUp 0.6s 0.8s ease forwards;
-        }
+			<style>
+				{`
+					@keyframes rotate-smooth {
+						from { transform: rotate(0deg); }
+						to { transform: rotate(360deg); }
+					}
 
-        /* SVG plants bottom */
-        .loader-plants {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          padding: 0 40px;
-          pointer-events: none;
-          opacity: 0.2;
-        }
+					@keyframes pulse-gentle {
+						0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.08; }
+						50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.12; }
+					}
 
-        /* Keyframes */
-        @keyframes orbPulse {
-          0%, 100% { transform: scale(1); opacity: 0.18; }
-          50% { transform: scale(1.08); opacity: 0.28; }
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spinRev {
-          to { transform: rotate(-360deg); }
-        }
-        @keyframes floatSlow {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-        }
-        @keyframes leafFloat {
-          0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.5; }
-          90% { opacity: 0.3; }
-          100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes sway {
-          0%, 100% { transform: rotate(-4deg); }
-          50% { transform: rotate(4deg); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-      `}</style>
+					@keyframes bounce-dot {
+						0%, 80%, 100% { transform: translateY(0); }
+						40% { transform: translateY(-8px); }
+					}
 
-      <div className={`bio-loader${phase === "done" ? " done" : ""}`}>
-        {/* Orbs */}
-        <div className="loader-orb loader-orb-1" />
-        <div className="loader-orb loader-orb-2" />
-        <div className="loader-orb loader-orb-3" />
+					@keyframes expand {
+						0% { width: 40%; opacity: 0.6; }
+						100% { width: 60%; opacity: 1; }
+					}
+				`}
+			</style>
+		</div>
+	);
+};
 
-        {/* Floating leaves */}
-        {["🍃", "🌿", "🍀", "🌱"].map((leaf, i) => (
-          <div
-            key={i}
-            className="loader-leaf"
-            style={{
-              left: `${15 + i * 22}%`,
-              animationDuration: `${7 + i * 2.5}s`,
-              animationDelay: `${i * 1.2}s`,
-              fontSize: `${12 + i * 2}px`,
-            }}
-          >
-            {leaf}
-          </div>
-        ))}
-
-        {/* Wordmark */}
-        <div className="loader-wordmark">
-          <div className="loader-eyebrow">Nature's Living Color System</div>
-          <div className="loader-title">
-            Bio <em>Palette</em>
-          </div>
-        </div>
-
-        {/* Ring with botanical center */}
-        <div className="loader-ring-wrap" style={{ opacity: 0, animation: "fadeUp 0.7s 0.15s ease forwards" }}>
-          <div className="loader-ring-bg" />
-          <div className="loader-ring-track" />
-          <div className="loader-ring-mid" />
-          <div className="loader-ring-inner" />
-
-          {/* Botanical SVG */}
-          <div className="loader-botanical">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-              {/* Stem */}
-              <line x1="32" y1="58" x2="32" y2="28"
-                stroke="#87a878" strokeWidth="1.5" strokeLinecap="round"
-                style={{ animation: "float 4s ease-in-out infinite" }} />
-              {/* Leaves */}
-              <ellipse cx="32" cy="26" rx="12" ry="8" fill="#4a7c59" opacity="0.9"
-                style={{ animation: "float 4s 0.2s ease-in-out infinite", transformOrigin: "32px 26px" }} />
-              <ellipse cx="22" cy="34" rx="10" ry="6" fill="#2d5a27" opacity="0.85"
-                transform="rotate(-20 22 34)"
-                style={{ animation: "float 4s 0.5s ease-in-out infinite" }} />
-              <ellipse cx="42" cy="33" rx="9" ry="6" fill="#87a878" opacity="0.85"
-                transform="rotate(20 42 33)"
-                style={{ animation: "float 4s 0.8s ease-in-out infinite" }} />
-              {/* Small accent */}
-              <circle cx="32" cy="18" r="2.5" fill="#d4b896" opacity="0.7"
-                style={{ animation: "float 3s 0.3s ease-in-out infinite" }} />
-            </svg>
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div className="loader-progress-wrap">
-          <div className="loader-progress-numbers">
-            <span className="loader-percent">{progress}%</span>
-            <span className="loader-label">
-              {progress < 35 ? "Sourcing biomes" : progress < 65 ? "Mapping pigments" : progress < 90 ? "Calibrating hues" : "Ready"}
-            </span>
-          </div>
-          <div className="loader-bar-track">
-            <div className="loader-bar-fill" style={{ width: `${progress}%` }} />
-          </div>
-        </div>
-
-        {/* Bottom hint */}
-        <div className="loader-hint">Botanical Color Intelligence</div>
-
-        {/* SVG plants */}
-        <div className="loader-plants">
-          <svg width="90" height="130" viewBox="0 0 90 130" fill="none">
-            <path d="M45 130 Q45 90 45 60" stroke="#87a878" strokeWidth="2" strokeLinecap="round"
-              style={{ animation: "sway 4s ease-in-out infinite", transformOrigin: "45px 130px" }} />
-            <ellipse cx="45" cy="58" rx="20" ry="13" fill="#4a7c59"
-              style={{ animation: "float 5s ease-in-out infinite" }} />
-            <ellipse cx="30" cy="74" rx="16" ry="10" fill="#2d5a27"
-              style={{ animation: "float 5s 0.6s ease-in-out infinite" }} />
-            <ellipse cx="60" cy="70" rx="15" ry="9" fill="#87a878"
-              style={{ animation: "float 5s 1s ease-in-out infinite" }} />
-          </svg>
-          <svg width="70" height="100" viewBox="0 0 70 100" fill="none" style={{ transform: "scaleX(-1)" }}>
-            <path d="M35 100 Q35 72 35 48" stroke="#b5c4a1" strokeWidth="1.5" strokeLinecap="round"
-              style={{ animation: "sway 4s 0.5s ease-in-out infinite", transformOrigin: "35px 100px" }} />
-            <ellipse cx="35" cy="46" rx="17" ry="11" fill="#87a878"
-              style={{ animation: "float 5s 0.8s ease-in-out infinite" }} />
-            <ellipse cx="22" cy="60" rx="13" ry="8" fill="#4a7c59"
-              style={{ animation: "float 5s 1.3s ease-in-out infinite" }} />
-          </svg>
-        </div>
-      </div>
-    </>
-  );
-}
+export default DPSLoading;
