@@ -31,10 +31,10 @@ const Home = () => {
         {/* <ViceChancellorNoticesSection/> */}
       </div>
       <StatsSection />
+      <Mission/>
     <EventsSection />
       <StarSection/>
       {/* <QuickLinks/> */}
-      <Mission/>
         {/* <ImpLinks/> */}
       {/* <Testimonials/> */}
       <TestimonialsSection />
