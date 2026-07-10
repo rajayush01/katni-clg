@@ -4,12 +4,12 @@ import StatsSection from '@/components/home/StatsSection'
 import React from 'react'
 //import News from '@/components/home/News'
 //import ImpLinks from '@/components/home/ImpLinks'
-import About from '@/components/home/About'
+// import About from '@/components/home/About'
 // import UniversitySongs from '@/components/home/UniversitySongs'
 // import GalleryPreview from '@/components/home/GalleryPreview'
 import ChancellorNoticesSection from '@/components/home/ChancellorNoticesSection'
 import StarSection from '@/components/home/StarSection'
-import QuickLinks from '@/components/home/QuickLinks'
+// import QuickLinks from '@/components/home/QuickLinks'
 import Mission from '@/components/home/Mission';
 // import TestimonialCard from '@/components/home/TestimonialCard'
 // import Testimonials from '@/components/home/Testimonials'
@@ -24,7 +24,7 @@ const Home = () => {
     <div className="antialiased bg-white">
       {/* NO FLOATING BUTTON COMPONENT HERE! It's already in App.tsx */}
       <HeroSection />
-      <About/>
+      {/* <About/> */}
       <AboutSection/>
       <div className='flex flex-col gap-10'>
         <ChancellorNoticesSection/>
