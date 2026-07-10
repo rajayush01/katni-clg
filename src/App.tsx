@@ -46,6 +46,7 @@ import Photogallery from './pages/Photogallery';
 import Mediagallery from './pages/Mediagallery';
 import Videogallery from './pages/Videogallery';
 import IQACPage from './pages/college/IQACpage';
+import GalleryCategoryPage from './pages/GalleryCategoryPage';
 
 const Home = lazy(() => import('./pages/Home'));
 // const Legacy = lazy(() => import('./pages/Legacy'));
@@ -136,7 +137,8 @@ function App() {
 					<Route path="/programmes/:level/:stream/:specialization" element={<ProgrammePage />} />
 					<Route path="/programmes/:level/:stream" element={<ProgrammePage />} />
 					<Route path="/programmes/:level" element={<ProgrammePage />} />
-
+					<Route path="/gallery" element={<Photogallery />} />
+					<Route path="/gallery/:category" element={<GalleryCategoryPage />} />
 				</Route>
 				<Route
 					path="/404"
