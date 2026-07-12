@@ -5,7 +5,7 @@ import { X, ChevronLeft, ChevronRight, ZoomIn, ArrowLeft } from 'lucide-react';
 import {
   CategorySlug,
   CATEGORY_LABELS,
-  CATEGORY_TAGLINES,
+  // CATEGORY_TAGLINES,
   CATEGORY_ORDER,
   getImagesByCategory,
 } from '@/data/galleryData';
@@ -71,7 +71,7 @@ const GalleryCategoryPage: React.FC = () => {
   if (!isValidCategory(category)) return null; // redirecting via effect above
 
   const label = CATEGORY_LABELS[category];
-  const tagline = CATEGORY_TAGLINES[category];
+  // const tagline = CATEGORY_TAGLINES[category];
   const otherCategories = CATEGORY_ORDER.filter((c) => c !== category);
 
   return (
@@ -132,9 +132,7 @@ const GalleryCategoryPage: React.FC = () => {
           <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(38px,6.5vw,64px)', fontWeight: 800, color: '#fff', margin: '0 0 12px', lineHeight: 1.08 }}>
             {label}
           </h1>
-          <p style={{ fontFamily: 'sans-serif', fontSize: 14.5, color: 'rgba(255,255,255,0.55)', maxWidth: 460, margin: '0 auto', lineHeight: 1.7 }}>
-            {tagline} · {images.length} photo{images.length !== 1 ? 's' : ''}
-          </p>
+          
         </div>
       </motion.section>
 

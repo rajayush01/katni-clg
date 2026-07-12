@@ -13,20 +13,20 @@ export interface GalleryImage {
 }
 
 export const CATEGORY_LABELS: Record<CategorySlug, string> = {
-  campus: 'Campus',
-  academics: 'Academics',
-  sports: 'Sports',
-  cultural: 'Cultural',
-  convocation: 'Convocation',
+  campus: 'NSS',
+  academics: 'World Bank Focal Point Visit',
+  sports: 'Govt. Tilak P.G.College',
+  cultural: 'NCC',
+  convocation: 'Tiranga Raily 12-08-2025',
 };
 
-export const CATEGORY_TAGLINES: Record<CategorySlug, string> = {
-  campus: 'Courtyards, corridors and everyday campus life',
-  academics: 'Lectures, labs and life inside the classroom',
-  sports: 'Matches, meets and the annual sports calendar',
-  cultural: 'Fests, performances and the college stage',
-  convocation: 'Graduation day, year after year',
-};
+// export const CATEGORY_TAGLINES: Record<CategorySlug, string> = {
+//   campus: 'Courtyards, corridors and everyday campus life',
+//   academics: 'Lectures, labs and life inside the classroom',
+//   sports: 'Matches, meets and the annual sports calendar',
+//   cultural: 'Fests, performances and the college stage',
+//   convocation: 'Graduation day, year after year',
+// };
 
 import NSS01 from '@/assets/NSS/NSS01.png';
 import NSS1 from '@/assets/NSS/NSS1.jpeg';

@@ -99,9 +99,9 @@ const Photogallery: React.FC = () => {
                   <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: idx === 0 ? 'clamp(24px,3vw,34px)' : 'clamp(19px,2.4vw,24px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 4 }}>
                     {CATEGORY_LABELS[slug]}
                   </div>
-                  <div style={{ fontFamily: 'sans-serif', fontSize: 12.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, maxWidth: 320 }}>
+                  {/* <div style={{ fontFamily: 'sans-serif', fontSize: 12.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, maxWidth: 320 }}>
                     {CATEGORY_TAGLINES[slug]}
-                  </div>
+                  </div> */}
                   <div className="gs-tile-cta">View Gallery <ArrowUpRight size={12} /></div>
                 </div>
               </motion.div>
