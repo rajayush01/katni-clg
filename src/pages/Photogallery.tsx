@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-import { CATEGORY_ORDER, CATEGORY_LABELS, CATEGORY_TAGLINES, getCoverImage, getImagesByCategory } from '@/data/galleryData';
+import { CATEGORY_ORDER, CATEGORY_LABELS, getCoverImage, getImagesByCategory } from '@/data/galleryData';
 
 const GOLD = '#e5be10';
 const INK = '#1a1a1a';
