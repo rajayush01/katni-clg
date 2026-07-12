@@ -60,6 +60,11 @@ const GalleryCategoryPage: React.FC = () => {
     touchStartX.current = null;
   };
 
+  const ROW_UNIT = 8;   // must match grid-auto-rows above
+  const ROW_GAP = 20;   // must match the grid gap above
+
+  const getSpan = (height: number) => Math.ceil((height + ROW_GAP) / (ROW_UNIT + ROW_GAP));
+
   const current = selectedIndex !== null ? images[selectedIndex] : null;
 
   const slideVariants = {
@@ -90,16 +95,31 @@ const GalleryCategoryPage: React.FC = () => {
         .gcp-crumb { font-family:sans-serif; font-size:12px; font-weight:600; letter-spacing:0.04em; color:#999; text-decoration:none; padding:8px 16px; border-radius:20px; border:1px solid #eee; transition: color 0.2s, border-color 0.2s, background 0.2s; }
         .gcp-crumb:hover { color:${INK}; border-color:#ddd; background:#fafafa; }
 
-        .gal-masonry { column-count: 1; column-gap: 20px; max-width: 1280px; margin: 0 auto; padding: 36px 24px 100px; }
-        @media (min-width: 560px) { .gal-masonry { column-count: 2; } }
-        @media (min-width: 900px) { .gal-masonry { column-count: 3; } }
-        @media (min-width: 1200px) { .gal-masonry { column-count: 4; } }
+        .gal-masonry {
+          display: grid;
+          grid-template-columns: repeat(1, 1fr);
+          grid-auto-rows: 8px;
+          gap: 20px;
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 36px 24px 100px;
+        }
+        @media (min-width: 560px) { .gal-masonry { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 900px) { .gal-masonry { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1200px) { .gal-masonry { grid-template-columns: repeat(4, 1fr); } }
 
-        .gal-item { break-inside: avoid; margin-bottom: 20px; border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; box-shadow: 0 2px 14px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; }
-        .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s cubic-bezier(.19,1,.22,1); }
+        .gal-item { border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; box-shadow: 0 2px 14px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; }        .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s cubic-bezier(.19,1,.22,1); }
         .gal-item:hover img { transform: scale(1.07); }
-        .gal-item-overlay { position:absolute; inset:0; background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.05) 45%, transparent 65%); opacity: 0; transition: opacity 0.3s; display:flex; flex-direction:column; justify-content:flex-end; padding: 16px; }
-        .gal-item:hover .gal-item-overlay { opacity: 1; }
+        .gal-item-overlay {
+          position:absolute; inset:0;
+          background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 35%, transparent 65%);
+          opacity: 1; /* always visible now */
+          transition: background 0.3s;
+          display:flex; flex-direction:column; justify-content:flex-end; padding: 16px;
+        }
+        .gal-item:hover .gal-item-overlay {
+          background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 45%, transparent 70%);
+        }
         .gal-item-zoom { position:absolute; top:12px; right:12px; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; color:#fff; opacity:0; transform: scale(0.8); transition: opacity 0.25s, transform 0.25s; }
         .gal-item:hover .gal-item-zoom { opacity: 1; transform: scale(1); }
 
@@ -151,7 +171,7 @@ const GalleryCategoryPage: React.FC = () => {
               key={img.id}
               layout
               className="gal-item"
-              style={{ height: img.height }}
+              style={{ gridRowEnd: `span ${getSpan(img.height)}` }}
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94 }}
@@ -159,7 +179,7 @@ const GalleryCategoryPage: React.FC = () => {
               onClick={() => openAt(idx)}
               whileHover={{ y: -4 }}
             >
-              <img src={img.src} alt={img.caption} loading="lazy" />
+              <img src={img.src} alt={img.caption} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div className="gal-item-overlay">
                 <div style={{ fontFamily: 'sans-serif', fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.4 }}>
                   {img.caption}
