@@ -13,7 +13,11 @@ interface GalleryCategory {
   description: string;
   icon: string;
   images: GalleryImage[];
+
 }
+
+
+
 
 const Gallery: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
